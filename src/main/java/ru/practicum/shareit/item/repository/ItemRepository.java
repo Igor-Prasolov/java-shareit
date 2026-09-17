@@ -21,6 +21,4 @@ public interface ItemRepository {
 
     List<Item> search(String text);
 
-
-
 }
