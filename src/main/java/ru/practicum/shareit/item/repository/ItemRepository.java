@@ -19,6 +19,8 @@ public interface ItemRepository {
 
     void deleteItem(Long id);
 
+    List<Item> search(String text);
+
 
 
 }

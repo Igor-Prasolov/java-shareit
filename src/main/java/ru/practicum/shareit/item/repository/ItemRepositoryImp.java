@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class ItemRepositoryImp implements ItemRepository {
@@ -46,9 +47,7 @@ public class ItemRepositoryImp implements ItemRepository {
     @Override
     public List<Item> findAll() {
         List<Item> items = new ArrayList<>();
-        for (Item item : itemMap.values()) {
-            items.add(item);
-        }
+        items.addAll(itemMap.values());
         return items;
     }
 
@@ -63,4 +62,17 @@ public class ItemRepositoryImp implements ItemRepository {
                 .map(id -> id + 1)
                 .orElse(1L);
     }
+
+    @Override
+    public List<Item> search(String text) {
+        List<Item> items = findAll().stream()
+                .filter(item -> ((item.getName().toLowerCase().contains(text.toLowerCase())
+                        || item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                        && item.getAvailable() == true)
+                )
+                .collect(Collectors.toList());
+
+        return items;
+    }
+
 }
