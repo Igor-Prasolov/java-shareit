@@ -14,13 +14,16 @@ import ru.practicum.shareit.exception.ConflictException;
 import ru.practicum.shareit.exception.ForbiddenException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -30,8 +33,11 @@ import java.util.List;
 public class BookingServiceImp implements BookingService {
     private final BookingRepository bookingRepository;
     private final BookingMapper bookingMapper;
+    private final ItemMapper itemMapper;
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+
 
     @Override
     public BookingResponseDto createBooking(BookingDto booking, Long userId) {
@@ -55,8 +61,9 @@ public class BookingServiceImp implements BookingService {
         newBooking.setBooker(booker);
         newBooking.setStatus(BookingStatus.WAITING);
 
-        return bookingMapper.toBookingResponseDto(bookingRepository.save(newBooking));
+        return toBookingResponseDto(bookingRepository.save(newBooking));
     }
+
 
     @Override
     public BookingResponseDto updateBooking(Long bookingId, BookingStatus bookingStatus, Long userId) {
@@ -71,8 +78,9 @@ public class BookingServiceImp implements BookingService {
         }
         booking.setStatus(bookingStatus);
 
-        return bookingMapper.toBookingResponseDto(bookingRepository.save(booking));
+        return toBookingResponseDto(bookingRepository.save(booking));
     }
+
 
     @Override
     public BookingResponseDto findBookingById(Long id, Long userId) {
@@ -83,21 +91,44 @@ public class BookingServiceImp implements BookingService {
             throw new NotFoundException("Отказано в доступе");
         }
 
-        return bookingMapper.toBookingResponseDto(booking);
+        return toBookingResponseDto(booking);
     }
+
 
     @Override
     public List<BookingResponseDto> findAllBookingByBookerId(Long bookerId, BookingState state) {
         getUserOrThrow(bookerId);
-        List<Booking> bookingList = bookingRepository.findAllByBookerId(bookerId);
-        return filterByState(bookingList, state);
+
+        List<Booking> bookingList = switch (state) {
+            case ALL -> bookingRepository.findAllByBookerId(bookerId);
+            case PAST -> bookingRepository.findAllByBookerIdPast(bookerId, LocalDateTime.now());
+            case FUTURE -> bookingRepository.findAllByBookerIdFuture(bookerId, LocalDateTime.now());
+            case CURRENT -> bookingRepository.findAllByBookerIdCurrent(bookerId, LocalDateTime.now());
+            case WAITING -> bookingRepository.findAllByBookerIdStatus(bookerId, BookingStatus.WAITING);
+            case REJECTED -> bookingRepository.findAllByBookerIdStatus(bookerId, BookingStatus.REJECTED);
+        };
+
+        return bookingList.stream()
+                .map(this::toBookingResponseDto)
+                .toList();
     }
+
 
     @Override
     public List<BookingResponseDto> findAllBookingByOwnerId(Long ownerId, BookingState state) {
         getUserOrThrow(ownerId);
-        List<Booking> bookingList = bookingRepository.findAllByItemOwnerId(ownerId);
-       return filterByState(bookingList, state);
+        List<Booking> bookingList = switch (state) {
+            case ALL -> bookingRepository.findAllByItemOwnerId(ownerId);
+            case PAST -> bookingRepository.findAllByItemOwnerIdPast(ownerId, LocalDateTime.now());
+            case FUTURE -> bookingRepository.findAllByItemOwnerIdFuture(ownerId, LocalDateTime.now());
+            case CURRENT -> bookingRepository.findAllByItemOwnerIdCurrent(ownerId, LocalDateTime.now());
+            case WAITING -> bookingRepository.findAllByItemOwnerIdStatus(ownerId, BookingStatus.WAITING);
+            case REJECTED -> bookingRepository.findAllByItemOwnerIdStatus(ownerId, BookingStatus.REJECTED);
+        };
+
+        return bookingList.stream()
+                .map(this::toBookingResponseDto)
+                .toList();
     }
 
 
@@ -125,25 +156,11 @@ public class BookingServiceImp implements BookingService {
                 });
     }
 
-    private List<BookingResponseDto> filterByState(List<Booking> bookingList, BookingState state) {
-        List<Booking> filterList = new ArrayList<>();
+    private BookingResponseDto toBookingResponseDto(Booking booking) {
+        UserDto userDto = userMapper.toUserDto(booking.getBooker());
+        ItemDto itemDto = itemMapper.toItemDto(booking.getItem());
 
-        for (Booking booking : bookingList) {
-            boolean bool = switch (state) {
-                case ALL -> true;
-                case PAST -> booking.getEnd().isBefore(LocalDateTime.now());
-                case FUTURE -> booking.getStart().isAfter(LocalDateTime.now());
-                case CURRENT -> booking.getStart().isBefore(LocalDateTime.now())
-                        && booking.getEnd().isAfter(LocalDateTime.now());
-                case WAITING -> booking.getStatus() == BookingStatus.WAITING;
-                case REJECTED -> booking.getStatus() == BookingStatus.REJECTED;
-            };
-
-            if (bool) {
-                filterList.add(booking);
-            }
-        }
-
-        return bookingMapper.toBookingResponseDtoList(filterList);
+        return bookingMapper.toBookingResponseDto(booking, userDto, itemDto);
     }
+
 }

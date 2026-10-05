@@ -29,4 +29,5 @@ public class ItemDto {
     private ItemBookingDto lastBooking;
 
     private ItemBookingDto nextBooking;
+
 }
