@@ -131,10 +131,6 @@ public class ItemServiceImp implements ItemService {
 
     @Override
     public List<ItemDto> searchItems(String text) {
-        if (text == null || text.isEmpty()) {
-            return new ArrayList<>();
-        }
-
         return itemMapper.toItemDtoList(itemRepository.search(text));
     }
 

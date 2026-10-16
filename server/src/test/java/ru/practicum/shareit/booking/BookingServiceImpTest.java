@@ -71,18 +71,6 @@ public class BookingServiceImpTest {
     }
 
     @Test
-    void createBookingWrongDatesTest() {
-        UserDto owner = createUser("Owner", "owner@");
-        UserDto booker = createUser("Booker", "booker@");
-        ItemDto item = createItem(owner.getId(), true);
-        BookingDto request = makeBookingDto(item.getId(),
-                LocalDateTime.of(2091, 1, 1, 10, 0),
-                LocalDateTime.of(2090, 1, 1, 10, 0));
-
-        assertThrows(ValidationException.class, () -> bookingService.createBooking(request, booker.getId()));
-    }
-
-    @Test
     void createBookingItemNotFoundTest() {
         UserDto booker = createUser("Booker", "booker@");
         BookingDto request = makeBookingDto(9999L,

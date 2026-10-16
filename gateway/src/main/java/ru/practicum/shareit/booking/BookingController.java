@@ -39,6 +39,7 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> createBooking(@Valid @RequestBody BookingDto bookingDto,
                                                 @RequestHeader("X-Sharer-User-Id") Long userId) {
+        bookingDto.datesValid();
         log.info("Вызов метода createBooking контроллера");
         return bookingClient.createBooking(bookingDto, userId);
     }

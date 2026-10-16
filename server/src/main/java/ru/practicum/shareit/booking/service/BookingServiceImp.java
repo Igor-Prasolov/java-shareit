@@ -45,10 +45,6 @@ public class BookingServiceImp implements BookingService {
     @Override
     public BookingResponseDto createBooking(BookingDto booking, Long userId) {
         User booker = getUserOrThrow(userId);
-        if (!booking.getEnd().isAfter(booking.getStart())) {
-            log.warn("Некорректные сроки бронирования");
-            throw new ValidationException("Некорректные сроки бронирования");
-        }
         Item item = getItemOrThrow(booking.getItemId());
         if (!item.getAvailable()) {
             log.warn("Ошибка: вещь уже забронирована");
