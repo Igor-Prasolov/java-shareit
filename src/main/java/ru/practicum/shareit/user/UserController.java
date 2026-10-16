@@ -19,7 +19,6 @@ public class UserController {
     @GetMapping("/{userId}")
     public UserDto findUserById(@PathVariable Long userId) {
 
-
         log.info("Вызов метода findUserById в контроллере");
         return userService.findUserById(userId);
     }

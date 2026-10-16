@@ -25,9 +25,11 @@ public class UserServiceImp implements UserService {
     @Override
     public UserDto createUser(UserDto userDto) {
         User user = userMapper.toUser(userDto);
-        if (user.getEmail() != null) {
-            validEmail(user.getEmail());
+        if (user.getEmail() == null) {
+            log.warn("Отсутствует email в методе createUser");
+            throw new ValidationException("Отсутствует email");
         }
+        validEmail(user.getEmail());
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new ConflictException("Этот email уже существует");
         }
@@ -51,7 +53,7 @@ public class UserServiceImp implements UserService {
             validEmail(user.getEmail());
             existingUser.setEmail(user.getEmail());
         }
-        return userMapper.toUserDto(userRepository.update(id, existingUser));
+        return userMapper.toUserDto(userRepository.save(existingUser));
     }
 
     @Override
@@ -64,7 +66,7 @@ public class UserServiceImp implements UserService {
     @Override
     public void deleteUserById(Long id) {
         getUserOrThrow(id);
-        userRepository.deleteUser(id);
+        userRepository.deleteById(id);
 
     }
 
@@ -74,10 +76,10 @@ public class UserServiceImp implements UserService {
         }
     }
 
-    public User getUserOrThrow(Long userId) {
-        return userRepository.findUserById(userId)
+    private User getUserOrThrow(Long userId) {
+        return userRepository.findById(userId)
                 .orElseThrow(() -> {
-                    log.warn("Пользователь с ID {} в методе findUserById не найден", userId);
+                    log.warn("Пользователь с ID {} не найден", userId);
                     return new NotFoundException("Пользователь не найден");
                 });
     }

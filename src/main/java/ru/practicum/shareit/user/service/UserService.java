@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user.service;
 
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 
 public interface UserService {
 
@@ -12,7 +11,5 @@ public interface UserService {
     UserDto findUserById(Long id);
 
     void deleteUserById(Long id);
-
-    User getUserOrThrow(Long userId);
 
 }
