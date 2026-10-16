@@ -24,7 +24,6 @@ public class ItemAndCommentDtoTest {
 
     @Test
     void testItemDto() throws Exception {
-
         ItemBookingDto lastBooking = new ItemBookingDto();
         lastBooking.setId(1L);
         lastBooking.setBookerId(1L);
@@ -58,7 +57,6 @@ public class ItemAndCommentDtoTest {
         assertThat(result).extractingJsonPathStringValue("$.lastBooking.end").isEqualTo("2030-10-15T15:00:00");
         assertThat(result).extractingJsonPathStringValue("$.nextBooking.start").isEqualTo("2040-10-15T15:00:00");
         assertThat(result).extractingJsonPathStringValue("$.nextBooking.end").isEqualTo("2050-10-15T15:00:00");
-
     }
 
     @Test
@@ -75,8 +73,6 @@ public class ItemAndCommentDtoTest {
         assertThat(result).extractingJsonPathStringValue("$.text").isEqualTo("norm");
         assertThat(result).extractingJsonPathStringValue("$.authorName").isEqualTo("Igor");
         assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo("2026-10-15T15:00:00");
-
-
     }
 
 }

@@ -290,7 +290,7 @@ public class ItemServiceImpTest {
         UserDto otherUser = userService.createUser(makeUserDto("gsnhjfgd", "zx@mail.ru"));
         ItemDto itemDto = itemService.createItem(makeItemDto(), owner.getId());
         assertThrows(NotFoundException.class,
-                () ->itemService.deleteItemById(itemDto.getId(), otherUser.getId()));
+                () -> itemService.deleteItemById(itemDto.getId(), otherUser.getId()));
 
         ItemDto found = itemService.findItemById(itemDto.getId());
 
