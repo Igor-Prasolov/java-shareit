@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.is;
 
 @WebMvcTest(controllers = BookingController.class)
-public class BookingControllerTestWithContex {
+public class BookingControllerTest {
 
     @Autowired
     private ObjectMapper mapper;

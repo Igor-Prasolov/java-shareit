@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.is;
 
 
 @WebMvcTest(controllers = ItemController.class)
-public class ItemControllerTestWithContext {
+public class ItemControllerTest {
 
     @Autowired
     private ObjectMapper mapper;

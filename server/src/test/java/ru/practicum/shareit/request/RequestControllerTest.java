@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.hamcrest.Matchers.is;
 
 @WebMvcTest(controllers = RequestController.class)
-public class RequestControllerWithContext {
+public class RequestControllerTest {
 
     @Autowired
     private ObjectMapper mapper;
