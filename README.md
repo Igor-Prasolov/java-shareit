@@ -22,12 +22,15 @@ Java 21, Spring Boot 3.3, Spring Data JPA и Hibernate, PostgreSQL, Maven, Docke
 
 ## Как запустить
 
-Собрать проект через Maven (clean -> package) -> docker compose up --build в терминале
+Собрать проект через Maven (clean package) -> docker compose up --build в терминале
 
 
 После этого API доступно на `http://localhost:8080`
 
 ## Тесты
 
-Основная логика приложения server покрыта тестами на 90+%: Мок-тесты контроллеров, тесты сериализации DTO и интеграционные тесты на service-классы с логикой приложения.
-Проверка через Maven (clean-verify)
+Основная логика приложения server покрыта тестами на 90+%: мок-тесты контроллеров, тесты сериализации DTO и интеграционные тесты на service-классы с логикой приложения.
+Проверка через Maven (clean verify)
+
+## Схема базы данных
+![Схема базы данных](docs/db-schema.png)
